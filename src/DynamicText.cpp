@@ -37,16 +37,15 @@ void DynamicText::draw(const DrawArgs &args) {
 
 void DynamicText::step() {
     if(visibility != nullptr) {
-        if(*visibility) {
-            visible = true;
-        }
-        else {
-            visible = false;
-        }
-        if(viewMode == ACTIVE_LOW_VIEW) {
-            visible = !visible;
+        int v = *visibility;
+        if(viewMode == ACTIVE_LOW_VIEW)
+            v = !v;
+        if (v != _visible) {
+            visible = _visible = v;
+            parent->dirty = true;
         }
     }
+    TransparentWidget::step();
 }
 
 void DynamicText::setFont(const FontMode& newFontMode) {

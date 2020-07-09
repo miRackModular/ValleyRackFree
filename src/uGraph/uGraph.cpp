@@ -191,13 +191,13 @@ struct UGraph : Module {
         HHLed = Oneshot(0.1, sampleRate);
         resetLed = Oneshot(0.1, sampleRate);
         for(int i = 0; i < 6; ++i) {
-            drumTriggers[i] = Oneshot(0.001, sampleRate);
+            drumTriggers[i] = Oneshot(0.008, sampleRate);
             gateState[i] = false;
         }
         for(int i = 0; i < 3; ++i) {
             drumLED[i] = Oneshot(0.1, sampleRate);
         }
-        panelStyle = 0;
+        panelStyle = 1;
     }
 
     json_t *dataToJson() override {
@@ -551,9 +551,9 @@ struct UGraphDynamicText : TransparentWidget {
                 visible = !visible;
             }
         }
-        else {
-            visible = true;
-        }
+        // else {
+        //     visible = true;
+        // }
     }
 };
 
@@ -580,19 +580,19 @@ struct UGraphWidget : ModuleWidget {
     SvgPanel* lightPanel;
     UGraphWidget(UGraph *module);
     void appendContextMenu(Menu* menu) override;
-    void step() override;
+    // void step() override;
 };
 
 UGraphWidget::UGraphWidget(UGraph *module) {
     setModule(module);
-    setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/UGraphPanel.svg")));
+    setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/UGraphPanelLight.svg")));
 
-    if(module) {
-        lightPanel = new SvgPanel;
-        lightPanel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/UGraphPanelLight.svg")));
-        lightPanel->visible = false;
-        addChild(lightPanel);
-    }
+    // if(module) {
+    //     lightPanel = new SvgPanel;
+    //     lightPanel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/UGraphPanelLight.svg")));
+    //     lightPanel->visible = false;
+    //     addChild(lightPanel);
+    // }
 
     addChild(createWidget<ScrewBlack>(Vec(RACK_GRID_WIDTH, 0)));
     addChild(createWidget<ScrewBlack>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
@@ -714,7 +714,7 @@ UGraphWidget::UGraphWidget(UGraph *module) {
 struct UGraphPanelStyleItem : MenuItem {
     UGraph* module;
     int panelStyle;
-    void onAction(const event::Action &e) override {
+    void onAction(event::Action &e) override {
         module->panelStyle = panelStyle;
     }
     void step() override {
@@ -726,7 +726,7 @@ struct UGraphPanelStyleItem : MenuItem {
 struct UGraphTriggerOutputModeItem : MenuItem {
     UGraph* module;
     UGraph::TriggerOutputMode triggerOutputMode;
-    void onAction(const event::Action &e) override {
+    void onAction(event::Action &e) override {
         module->triggerOutputMode = triggerOutputMode;
     }
     void step() override {
@@ -738,7 +738,7 @@ struct UGraphTriggerOutputModeItem : MenuItem {
 struct UGraphAccOutputModeItem : MenuItem {
     UGraph* module;
     UGraph::AccOutputMode accOutputMode;
-    void onAction(const event::Action &e) override {
+    void onAction(event::Action &e) override {
         module->accOutputMode = accOutputMode;
         switch(accOutputMode) {
             case UGraph::INDIVIDUAL_ACCENTS:
@@ -757,7 +757,7 @@ struct UGraphAccOutputModeItem : MenuItem {
 struct UGraphRunModeItem : MenuItem {
     UGraph* module;
     UGraph::RunMode runMode;
-    void onAction(const event::Action &e) override {
+    void onAction(event::Action &e) override {
         module->runMode = runMode;
     }
     void step() override {
@@ -770,18 +770,18 @@ void UGraphWidget::appendContextMenu(Menu *menu) {
     UGraph *module = dynamic_cast<UGraph*>(this->module);
     assert(module);
 
-    // Panel style
-    menu->addChild(construct<MenuLabel>());
-    menu->addChild(construct<MenuLabel>(&MenuLabel::text, "Panel style"));
-    menu->addChild(construct<UGraphPanelStyleItem>(&MenuItem::text, "Dark", &UGraphPanelStyleItem::module,
-                                                      module, &UGraphPanelStyleItem::panelStyle, 0));
-    menu->addChild(construct<UGraphPanelStyleItem>(&MenuItem::text, "Light", &UGraphPanelStyleItem::module,
-                                                      module, &UGraphPanelStyleItem::panelStyle, 1));
+    // // Panel style
+    // menu->addChild(construct<MenuLabel>());
+    // menu->addChild(construct<MenuLabel>(&MenuLabel::text, "Panel style"));
+    // menu->addChild(construct<UGraphPanelStyleItem>(&MenuItem::text, "Dark", &UGraphPanelStyleItem::module,
+    //                                                   module, &UGraphPanelStyleItem::panelStyle, 0));
+    // menu->addChild(construct<UGraphPanelStyleItem>(&MenuItem::text, "Light", &UGraphPanelStyleItem::module,
+    //                                                   module, &UGraphPanelStyleItem::panelStyle, 1));
 
     // Trigger Output Modes
     menu->addChild(construct<MenuLabel>());
     menu->addChild(construct<MenuLabel>(&MenuLabel::text, "Trigger Output Mode"));
-    menu->addChild(construct<UGraphTriggerOutputModeItem>(&MenuItem::text, "1ms Pulse", &UGraphTriggerOutputModeItem::module,
+    menu->addChild(construct<UGraphTriggerOutputModeItem>(&MenuItem::text, "Short Pulse", &UGraphTriggerOutputModeItem::module,
                                                              module, &UGraphTriggerOutputModeItem::triggerOutputMode, UGraph::PULSE));
     menu->addChild(construct<UGraphTriggerOutputModeItem>(&MenuItem::text, "Gate", &UGraphTriggerOutputModeItem::module,
                                                              module, &UGraphTriggerOutputModeItem::triggerOutputMode, UGraph::GATE));
@@ -803,18 +803,18 @@ void UGraphWidget::appendContextMenu(Menu *menu) {
                                                    module, &UGraphRunModeItem::runMode, UGraph::RunMode::MOMENTARY));
 }
 
-void UGraphWidget::step() {
-    if(module) {
-        if(dynamic_cast<UGraph*>(module)->panelStyle == 1) {
-            panel->visible = false;
-            lightPanel->visible = true;
-        }
-        else {
-            panel->visible = true;
-            lightPanel->visible = false;
-        }
-    }
-    Widget::step();
-}
+// void UGraphWidget::step() {
+//     if(module) {
+//         if(dynamic_cast<UGraph*>(module)->panelStyle == 1) {
+//             panel->visible = false;
+//             lightPanel->visible = true;
+//         }
+//         else {
+//             panel->visible = true;
+//             lightPanel->visible = false;
+//         }
+//     }
+//     Widget::step();
+// }
 
 Model *modelUGraph = createModel<UGraph, UGraphWidget>("uGraph");

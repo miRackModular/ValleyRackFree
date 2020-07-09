@@ -1,3 +1,4 @@
+V1_COMPAT=1
 # SLUG = Valley
 # VERSION = 0.6.16
 

@@ -83,11 +83,11 @@ private:
     __m128 __chance32;
     __m128i __a32, __b32, __c32;
 
-    // 16 bit mode vars
-    __m64 __zero16, __one16;
-    __m64 __a, __b, __c;
-    __m64 __aPrev, __bPrev, __aREdge, __bREdge;
-    __m64 __count;
+    // // 16 bit mode vars
+    // __m64 __zero16, __one16;
+    // __m64 __a, __b, __c;
+    // __m64 __aPrev, __bPrev, __aREdge, __bREdge;
+    // __m64 __count;
 
     // Sample reduction
     float _step, _stepSize, _engineSampleRate, _internalSampleRate;

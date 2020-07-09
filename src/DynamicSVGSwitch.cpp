@@ -7,18 +7,13 @@ DynamicSwitchWidget::DynamicSwitchWidget() {
 
 void DynamicSwitchWidget::step() {
     if(_visibility != nullptr) {
-        if(*_visibility) {
-            visible = true;
+        int v = *_visibility;
+        if(_viewMode == ACTIVE_LOW_VIEW)
+            v = !v;
+        if (v != _visible) {
+            visible = _visible = v;
+            parent->dirty = true;
         }
-        else {
-            visible = false;
-        }
-        if(_viewMode == ACTIVE_LOW_VIEW) {
-            visible = !visible;
-        }
-    }
-    else {
-        visible = true;
     }
     SvgSwitch::step();
 }

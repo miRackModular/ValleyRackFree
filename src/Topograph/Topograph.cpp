@@ -182,13 +182,13 @@ struct Topograph : Module {
         resetLed = Oneshot(0.1, APP->engine->getSampleRate());
 
         for(int i = 0; i < 6; ++i) {
-            drumTriggers[i] = Oneshot(0.001, APP->engine->getSampleRate());
+            drumTriggers[i] = Oneshot(0.008, APP->engine->getSampleRate());
             gateState[i] = false;
         }
         for(int i = 0; i < 3; ++i) {
             drumLED[i] = Oneshot(0.1, APP->engine->getSampleRate());
         }
-        panelStyle = 0;
+        panelStyle = 1;
     }
 
     json_t *dataToJson() override {
@@ -483,20 +483,20 @@ struct PanelBorder : TransparentWidget {
 struct TopographWidget : ModuleWidget {
     TopographWidget(Topograph *topograph);
     void appendContextMenu(Menu* menu) override;
-    void step() override;
+    // void step() override;
     SvgPanel* lightPanel;
 };
 
 TopographWidget::TopographWidget(Topograph *module) {
     setModule(module);
-    setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/TopographPanel.svg")));
+    setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/TopographPanelWhite.svg")));
 
-    if(module) {
-        lightPanel = new SvgPanel;
-        lightPanel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/TopographPanelWhite.svg")));
-        lightPanel->visible = false;
-        addChild(lightPanel);
-    }
+    // if(module) {
+    //     lightPanel = new SvgPanel;
+    //     lightPanel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/TopographPanelWhite.svg")));
+    //     lightPanel->visible = false;
+    //     addChild(lightPanel);
+    // }
 
     addChild(createWidget<ScrewBlack>(Vec(RACK_GRID_WIDTH, 0)));
     addChild(createWidget<ScrewBlack>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
@@ -617,7 +617,7 @@ TopographWidget::TopographWidget(Topograph *module) {
 struct TopographPanelStyleItem : MenuItem {
     Topograph* module;
     int panelStyle;
-    void onAction(const event::Action &e) override {
+    void onAction(event::Action &e) override {
         module->panelStyle = panelStyle;
     }
     void step() override {
@@ -629,7 +629,7 @@ struct TopographPanelStyleItem : MenuItem {
 struct TopographSequencerModeItem : MenuItem {
     Topograph* module;
     Topograph::SequencerMode sequencerMode;
-    void onAction(const event::Action &e) override {
+    void onAction(event::Action &e) override {
         module->sequencerMode = sequencerMode;
         module->inEuclideanMode = 0;
         switch(sequencerMode) {
@@ -654,7 +654,7 @@ struct TopographSequencerModeItem : MenuItem {
 struct TopographTriggerOutputModeItem : MenuItem {
     Topograph* module;
     Topograph::TriggerOutputMode triggerOutputMode;
-    void onAction(const event::Action &e) override {
+    void onAction(event::Action &e) override {
         module->triggerOutputMode = triggerOutputMode;
     }
     void step() override {
@@ -666,7 +666,7 @@ struct TopographTriggerOutputModeItem : MenuItem {
 struct TopographAccOutputModeItem : MenuItem {
     Topograph* module;
     Topograph::AccOutputMode accOutputMode;
-    void onAction(const event::Action &e) override {
+    void onAction(event::Action &e) override {
         module->accOutputMode = accOutputMode;
         switch(accOutputMode) {
             case Topograph::INDIVIDUAL_ACCENTS:
@@ -685,7 +685,7 @@ struct TopographAccOutputModeItem : MenuItem {
 struct TopographClockResolutionItem : MenuItem {
     Topograph* module;
     Topograph::ExtClockResolution extClockResolution;
-    void onAction(const event::Action &e) override {
+    void onAction(event::Action &e) override {
         module->extClockResolution = extClockResolution;
         module->grids.reset();
     }
@@ -698,7 +698,7 @@ struct TopographClockResolutionItem : MenuItem {
 struct TopographRunModeItem : MenuItem {
     Topograph* module;
     Topograph::RunMode runMode;
-    void onAction(const event::Action &e) override {
+    void onAction(event::Action &e) override {
         module->runMode = runMode;
     }
     void step() override {
@@ -711,13 +711,13 @@ void TopographWidget::appendContextMenu(Menu *menu) {
     Topograph *module = dynamic_cast<Topograph*>(this->module);
     assert(module);
 
-    // Panel style
-    menu->addChild(construct<MenuLabel>());
-    menu->addChild(construct<MenuLabel>(&MenuLabel::text, "Panel style"));
-    menu->addChild(construct<TopographPanelStyleItem>(&MenuItem::text, "Dark", &TopographPanelStyleItem::module,
-                                                      module, &TopographPanelStyleItem::panelStyle, 0));
-    menu->addChild(construct<TopographPanelStyleItem>(&MenuItem::text, "Light", &TopographPanelStyleItem::module,
-                                                      module, &TopographPanelStyleItem::panelStyle, 1));
+    // // Panel style
+    // menu->addChild(construct<MenuLabel>());
+    // menu->addChild(construct<MenuLabel>(&MenuLabel::text, "Panel style"));
+    // menu->addChild(construct<TopographPanelStyleItem>(&MenuItem::text, "Dark", &TopographPanelStyleItem::module,
+    //                                                   module, &TopographPanelStyleItem::panelStyle, 0));
+    // menu->addChild(construct<TopographPanelStyleItem>(&MenuItem::text, "Light", &TopographPanelStyleItem::module,
+    //                                                   module, &TopographPanelStyleItem::panelStyle, 1));
 
     // Sequencer Modes
     menu->addChild(construct<MenuLabel>());
@@ -732,7 +732,7 @@ void TopographWidget::appendContextMenu(Menu *menu) {
     // Trigger Output Modes
     menu->addChild(construct<MenuLabel>());
     menu->addChild(construct<MenuLabel>(&MenuLabel::text, "Trigger Output Mode"));
-    menu->addChild(construct<TopographTriggerOutputModeItem>(&MenuItem::text, "1ms Pulse", &TopographTriggerOutputModeItem::module,
+    menu->addChild(construct<TopographTriggerOutputModeItem>(&MenuItem::text, "Short Pulse", &TopographTriggerOutputModeItem::module,
                                                              module, &TopographTriggerOutputModeItem::triggerOutputMode, Topograph::PULSE));
     menu->addChild(construct<TopographTriggerOutputModeItem>(&MenuItem::text, "Gate", &TopographTriggerOutputModeItem::module,
                                                              module, &TopographTriggerOutputModeItem::triggerOutputMode, Topograph::GATE));
@@ -764,18 +764,18 @@ void TopographWidget::appendContextMenu(Menu *menu) {
                                                    module, &TopographRunModeItem::runMode, Topograph::RunMode::MOMENTARY));
 }
 
-void TopographWidget::step() {
-    if(module) {
-        if(dynamic_cast<Topograph*>(module)->panelStyle == 1) {
-            panel->visible = false;
-            lightPanel->visible = true;
-        }
-        else {
-            panel->visible = true;
-            lightPanel->visible = false;
-        }
-    }
-    Widget::step();
-}
+// void TopographWidget::step() {
+//     if(module) {
+//         if(dynamic_cast<Topograph*>(module)->panelStyle == 1) {
+//             panel->visible = false;
+//             lightPanel->visible = true;
+//         }
+//         else {
+//             panel->visible = true;
+//             lightPanel->visible = false;
+//         }
+//     }
+//     Widget::step();
+// }
 
 Model *modelTopograph = createModel<Topograph, TopographWidget>("Topograph");

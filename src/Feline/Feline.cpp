@@ -21,7 +21,7 @@ Feline::Feline() {
         }
     }
 
-    panelStyle = 0;
+    panelStyle = 1;
     calcGTable(APP->engine->getSampleRate());
     filter.setSampleRate(APP->engine->getSampleRate());
     filter.setCutoff(_mm_set1_ps(10.f));
@@ -103,7 +103,7 @@ void Feline::dataFromJson(json_t *rootJ) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void FelinePanelStyleItem::onAction(const event::Action &e) {
+void FelinePanelStyleItem::onAction(event::Action &e) {
     module->panelStyle = panelStyle;
 }
 
@@ -116,14 +116,14 @@ void FelinePanelStyleItem::step() {
 
 FelineWidget::FelineWidget(Feline* module) {
     setModule(module);
-    setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/FelinePanelDark.svg")));
+    setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/FelinePanelLight.svg")));
 
-    if(module) {
-        lightPanel = new SvgPanel;
-        lightPanel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/FelinePanelLight.svg")));
-        lightPanel->visible = false;
-        addChild(lightPanel);
-    }
+    // if(module) {
+    //     lightPanel = new SvgPanel;
+    //     lightPanel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/FelinePanelLight.svg")));
+    //     lightPanel->visible = false;
+    //     addChild(lightPanel);
+    // }
     addChild(createWidget<ScrewBlack>(Vec(RACK_GRID_WIDTH, 0)));
     addChild(createWidget<ScrewBlack>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
     addChild(createWidget<ScrewBlack>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
@@ -166,30 +166,30 @@ FelineWidget::FelineWidget(Feline* module) {
     }
 }
 
-void FelineWidget::appendContextMenu(Menu *menu) {
-    Feline *module = dynamic_cast<Feline*>(this->module);
-    assert(module);
+// void FelineWidget::appendContextMenu(Menu *menu) {
+//     Feline *module = dynamic_cast<Feline*>(this->module);
+//     assert(module);
 
-    menu->addChild(construct<MenuLabel>());
-    menu->addChild(construct<MenuLabel>(&MenuLabel::text, "Panel style"));
-    menu->addChild(construct<FelinePanelStyleItem>(&MenuItem::text, "Dark", &FelinePanelStyleItem::module,
-                                                    module, &FelinePanelStyleItem::panelStyle, 0));
-    menu->addChild(construct<FelinePanelStyleItem>(&MenuItem::text, "Light", &FelinePanelStyleItem::module,
-                                                      module, &FelinePanelStyleItem::panelStyle, 1));
-}
+//     menu->addChild(construct<MenuLabel>());
+//     menu->addChild(construct<MenuLabel>(&MenuLabel::text, "Panel style"));
+//     menu->addChild(construct<FelinePanelStyleItem>(&MenuItem::text, "Dark", &FelinePanelStyleItem::module,
+//                                                     module, &FelinePanelStyleItem::panelStyle, 0));
+//     menu->addChild(construct<FelinePanelStyleItem>(&MenuItem::text, "Light", &FelinePanelStyleItem::module,
+//                                                       module, &FelinePanelStyleItem::panelStyle, 1));
+// }
 
-void FelineWidget::step() {
-    if(module) {
-        if(dynamic_cast<Feline*>(module)->panelStyle == 1) {
-            panel->visible = false;
-            lightPanel->visible = true;
-        }
-        else {
-            panel->visible = true;
-            lightPanel->visible = false;
-        }
-    }
-    Widget::step();
-}
+// void FelineWidget::step() {
+//     if(module) {
+//         if(dynamic_cast<Feline*>(module)->panelStyle == 1) {
+//             panel->visible = false;
+//             lightPanel->visible = true;
+//         }
+//         else {
+//             panel->visible = true;
+//             lightPanel->visible = false;
+//         }
+//     }
+//     Widget::step();
+// }
 
 Model *modelFeline = createModel<Feline, FelineWidget>("Feline");

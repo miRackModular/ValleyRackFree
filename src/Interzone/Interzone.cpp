@@ -196,7 +196,7 @@ void Interzone::dataFromJson(json_t *rootJ) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void InterzonePanelStyleItem::onAction(const event::Action &e) {
+void InterzonePanelStyleItem::onAction(event::Action &e) {
     module->panelStyle = panelStyle;
 }
 
@@ -209,14 +209,14 @@ void InterzonePanelStyleItem::step() {
 
 InterzoneWidget::InterzoneWidget(Interzone* module) {
     setModule(module);
-    setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/InterzonePanelDark.svg")));
+    setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/InterzonePanelLight.svg")));
 
-    if(module) {
-        lightPanel = new SvgPanel;
-        lightPanel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/InterzonePanelLight.svg")));
-        lightPanel->visible = false;
-        addChild(lightPanel);
-    }
+    // if(module) {
+    //     lightPanel = new SvgPanel;
+    //     lightPanel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/InterzonePanelLight.svg")));
+    //     lightPanel->visible = false;
+    //     addChild(lightPanel);
+    // }
 
     addChild(createWidget<ScrewBlack>(Vec(RACK_GRID_WIDTH, 0)));
     addChild(createWidget<ScrewBlack>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
@@ -318,30 +318,30 @@ InterzoneWidget::InterzoneWidget(Interzone* module) {
     addInput(createInput<PJ301MDarkSmall>(VCALevelCVPos, module, Interzone::VCA_LEVEL_CV_INPUT));
 }
 
-void InterzoneWidget::appendContextMenu(Menu *menu) {
-    Interzone *module = dynamic_cast<Interzone*>(this->module);
-    assert(module);
+// void InterzoneWidget::appendContextMenu(Menu *menu) {
+//     Interzone *module = dynamic_cast<Interzone*>(this->module);
+//     assert(module);
 
-    menu->addChild(construct<MenuLabel>());
-    menu->addChild(construct<MenuLabel>(&MenuLabel::text, "Panel style"));
-    menu->addChild(construct<InterzonePanelStyleItem>(&MenuItem::text, "Dark", &InterzonePanelStyleItem::module,
-                                                    module, &InterzonePanelStyleItem::panelStyle, 0));
-    menu->addChild(construct<InterzonePanelStyleItem>(&MenuItem::text, "Light", &InterzonePanelStyleItem::module,
-                                                      module, &InterzonePanelStyleItem::panelStyle, 1));
-}
+//     menu->addChild(construct<MenuLabel>());
+//     menu->addChild(construct<MenuLabel>(&MenuLabel::text, "Panel style"));
+//     menu->addChild(construct<InterzonePanelStyleItem>(&MenuItem::text, "Dark", &InterzonePanelStyleItem::module,
+//                                                     module, &InterzonePanelStyleItem::panelStyle, 0));
+//     menu->addChild(construct<InterzonePanelStyleItem>(&MenuItem::text, "Light", &InterzonePanelStyleItem::module,
+//                                                       module, &InterzonePanelStyleItem::panelStyle, 1));
+// }
 
-void InterzoneWidget::step() {
-    if(module) {
-        if(dynamic_cast<Interzone*>(module)->panelStyle == 1) {
-            panel->visible = false;
-            lightPanel->visible = true;
-        }
-        else {
-            panel->visible = true;
-            lightPanel->visible = false;
-        }
-    }
-    Widget::step();
-}
+// void InterzoneWidget::step() {
+//     if(module) {
+//         if(dynamic_cast<Interzone*>(module)->panelStyle == 1) {
+//             panel->visible = false;
+//             lightPanel->visible = true;
+//         }
+//         else {
+//             panel->visible = true;
+//             lightPanel->visible = false;
+//         }
+//     }
+//     Widget::step();
+// }
 
 Model *modelInterzone = createModel<Interzone, InterzoneWidget>("Interzone");

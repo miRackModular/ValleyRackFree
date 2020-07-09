@@ -20,7 +20,7 @@ struct DynamicPanelWidget : FramebufferWidget {
 
     DynamicPanelWidget();
     void addPanel(std::shared_ptr<Svg> svg);
-    void step() override;
+    // void step() override;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -37,6 +37,7 @@ enum DynamicViewMode {
 
 struct DynamicSwitchWidget : SvgSwitch {
     int* _visibility;
+    int _visible = -1;
     DynamicViewMode _viewMode;
 
     DynamicSwitchWidget();
@@ -49,10 +50,10 @@ DynamicSwitchWidget* createDynamicSwitchWidget(Vec pos, Module *module, int para
                                                int* visibilityHandle, DynamicViewMode viewMode) {
 	DynamicSwitchWidget *dynSwitch = new TDynamicSwitch();
 	dynSwitch->box.pos = pos;
-	dynSwitch->paramQuantity->paramId = paramId;
-    if (module) {
-		module->configParam(paramId, minValue, maxValue, defaultValue);
-	}
+    dynSwitch->module = module;
+    dynSwitch->paramId = paramId;
+    dynSwitch->setLimits(minValue, maxValue);
+    dynSwitch->setDefaultValue(defaultValue);
     dynSwitch->_visibility = visibilityHandle;
     dynSwitch->_viewMode = viewMode;
 	return dynSwitch;
@@ -65,6 +66,7 @@ struct DynamicModuleLightWidget : MultiLightWidget {
 	Module *module = NULL;
 	int firstLightId;
     int* visibility = nullptr;
+//    int _visible = -1;
     DynamicViewMode viewMode = ACTIVE_HIGH_VIEW;
 
 	void step() override;
@@ -90,23 +92,24 @@ enum DynamicKnobMotion {
     SNAP_MOTION
 };
 
-struct DynamicKnob : virtual Knob {
-	/** Angles in radians */
-	float minAngle, maxAngle;
-	/** Not owned */
-    FramebufferWidget *fb;
-	TransformWidget *tw;
-	SvgWidget *sw;
-    CircularShadow *shadow;
-    int* _visibility;
-    DynamicViewMode _viewMode;
+// struct DynamicKnob : virtual Knob {
+// 	/** Angles in radians */
+// 	float minAngle, maxAngle;
+// 	/** Not owned */
+//     FramebufferWidget *fb;
+// 	TransformWidget *tw;
+// 	SvgWidget *sw;
+//     CircularShadow *shadow;
+//     int* _visibility;
+//     DynamicViewMode _viewMode;
 
-	DynamicKnob();
-	void setSvg(std::shared_ptr<Svg> svg);
-};
+// 	DynamicKnob();
+// 	void setSvg(std::shared_ptr<Svg> svg);
+// };
 
 struct DynamicSvgKnob : SvgKnob {
     int* _visibility;
+    int _visible = -1;
     DynamicViewMode _viewMode;
 
 	DynamicSvgKnob();
@@ -118,12 +121,8 @@ TParamWidget *createDynamicParam(math::Vec pos, engine::Module *module,
                                  int paramId, int* visibilityHandle,
                                  DynamicViewMode viewMode,
                                  DynamicKnobMotion motion) {
-	TParamWidget *o = new TParamWidget;
-	o->box.pos = pos;
-	if (module) {
-		o->paramQuantity = module->paramQuantities[paramId];
-        o->_visibility = visibilityHandle;
-	}
+	TParamWidget *o = createParam<TParamWidget>(pos, module, paramId);
+    o->_visibility = visibilityHandle;
     o->_viewMode = viewMode;
     if(motion == SNAP_MOTION) {
         o->snap = true;
@@ -135,12 +134,8 @@ template <class TParamWidget>
 TParamWidget *createDynamicParam(math::Vec pos, engine::Module *module,
                                  int paramId, int* visibilityHandle,
                                  DynamicViewMode viewMode) {
-	TParamWidget *o = new TParamWidget;
-	o->box.pos = pos;
-	if (module) {
-		o->paramQuantity = module->paramQuantities[paramId];
-        o->_visibility = visibilityHandle;
-	}
+    TParamWidget *o = createParam<TParamWidget>(pos, module, paramId);
+    o->_visibility = visibilityHandle;
     o->_viewMode = viewMode;
 	return o;
 }
@@ -148,7 +143,7 @@ TParamWidget *createDynamicParam(math::Vec pos, engine::Module *module,
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 struct SvgStepSlider : app::SvgSlider {
-	void onChange(const event::Change& e) override;
+	void onChange(event::Change& e) override;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -160,6 +155,7 @@ struct DynamicText : TransparentWidget {
     int size;
     float blur;
     int* visibility;
+    int _visible = -1;
     DynamicViewMode viewMode;
 
     enum ColorMode {
@@ -209,6 +205,7 @@ public:
     std::shared_ptr<Font> font;
     int size;
     int* visibility;
+    int _visible = -1;
     DynamicViewMode viewMode;
 
     enum ColorMode {
@@ -255,14 +252,12 @@ public:
         }
         _text = _valueToText(*_value);
         if(visibility != nullptr) {
-            if(*visibility) {
-                visible = true;
-            }
-            else {
-                visible = false;
-            }
-            if(viewMode == ACTIVE_LOW_VIEW) {
-                visible = !visible;
+            int v = *visibility;
+            if(viewMode == ACTIVE_LOW_VIEW)
+                v = !v;
+            if (v != _visible) {
+                visible = _visible = v;
+                parent->dirty = true;
             }
         }
     }
@@ -279,7 +274,7 @@ struct DynamicItem : MenuItem {
     unsigned long _itemNumber;
     unsigned long* _choice;
     DynamicItem(unsigned long itemNumber);
-    void onAction(const event::Action &e) override;
+    void onAction(event::Action &e) override;
 };
 
 struct DynamicChoice : ChoiceButton {
@@ -288,11 +283,12 @@ struct DynamicChoice : ChoiceButton {
     std::shared_ptr<std::string> _text;
     std::shared_ptr<Font> _font;
     int* _visibility;
+    int _visible = -1;
     int _textSize;
     DynamicViewMode _viewMode;
     DynamicChoice();
     void step() override;
-    void onAction(const event::Action &e) override;
+    void onAction(event::Action &e) override;
     void draw(const DrawArgs &args) override;
 };
 

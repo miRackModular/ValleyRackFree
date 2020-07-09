@@ -151,7 +151,7 @@ struct Amalgam : Module {
     bool dcCoupleButtonState = false;
     bool prevDcCoupleButtonState = false;
     bool dcCoupled = false;
-    int panelStyle = 0;
+    int panelStyle = 1;
 
     Amalgam();
     void process(const ProcessArgs &args) override;
@@ -163,14 +163,14 @@ struct Amalgam : Module {
 struct AmalgamPanelStyleItem : MenuItem {
     Amalgam* module;
     int panelStyle;
-    void onAction(const event::Action &e) override;
+    void onAction(event::Action &e) override;
     void step() override;
 };
 
 struct AmalgamWidget : ModuleWidget {
     AmalgamWidget(Amalgam *module);
-    void appendContextMenu(Menu *menu) override;
-    void step() override;
+    // void appendContextMenu(Menu *menu) override;
+    // void step() override;
 
     // Control positions
     Vec xDriveKnobPos = Vec(50.1, 53.083);

@@ -180,7 +180,7 @@ struct Plateau : Module {
     Dattorro reverb;
     LinearEnvelope envelope;
 
-    int panelStyle = 0;
+    int panelStyle = 1;
     int tuned;
     int diffuseInput;
 
@@ -198,35 +198,35 @@ struct Plateau : Module {
 struct PlateauPanelStyleItem : MenuItem {
     Plateau* module;
     int panelStyle;
-    void onAction(const event::Action &e) override;
+    void onAction(event::Action &e) override;
     void step() override;
 };
 
 struct PlateauPreDelayCVSensItem : MenuItem {
     Plateau* module;
     int preDelayCVSensState;
-    void onAction(const event::Action &e) override;
+    void onAction(event::Action &e) override;
     void step() override;
 };
 
 struct PlateauInputSensItem : MenuItem {
     Plateau* module;
     int inputSensitivityState;
-    void onAction(const event::Action &e) override;
+    void onAction(event::Action &e) override;
     void step() override;
 };
 
 struct PlateauOutputSaturationItem : MenuItem {
     Plateau* module;
     int outputSaturationState;
-    void onAction(const event::Action &e) override;
+    void onAction(event::Action &e) override;
     void step() override;
 };
 
 struct PlateauWidget : ModuleWidget {
     PlateauWidget(Plateau *module);
     void appendContextMenu(Menu *menu) override;
-    void step() override;
+    // void step() override;
 
     // Control positions
     Vec dryPos = Vec(52.1, 61.6);

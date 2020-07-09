@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 #include <cmath>
-#include <pmmintrin.h>
+// #include <pmmintrin.h>
 #define MAX_DELAY_TAP_GROUPS 512
 #define MAX_DELAY_LENGTH 65536
 

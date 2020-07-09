@@ -91,14 +91,14 @@ struct Feline : Module {
 struct FelinePanelStyleItem : MenuItem {
     Feline* module;
     int panelStyle;
-    void onAction(const event::Action &e) override;
+    void onAction(event::Action &e) override;
     void step() override;
 };
 
 struct FelineWidget : ModuleWidget {
     FelineWidget(Feline *module);
-    void appendContextMenu(Menu *menu) override;
-    void step() override;
+    // void appendContextMenu(Menu *menu) override;
+    // void step() override;
 
     Vec leftInputPos = Vec(4.7f, 316.7f);
     Vec rightInputPos = Vec(27.2f, 316.7f);

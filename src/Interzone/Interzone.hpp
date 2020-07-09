@@ -25,7 +25,7 @@
 #ifndef DSJ_INTERZONE_HPP
 #define DSJ_INTERZONE_HPP
 
-#include <pmmintrin.h>
+// #include <pmmintrin.h>
 #include <iostream>
 #include "../Valley.hpp"
 #include "../ValleyComponents.hpp"
@@ -167,20 +167,20 @@ struct Interzone : Module {
     OnePoleLPFilter gateSlew;
     DEnv env;
 
-    int panelStyle = 0;
+    int panelStyle = 1;
 };
 
 struct InterzonePanelStyleItem : MenuItem {
     Interzone* module;
     int panelStyle;
-    void onAction(const event::Action &e) override;
+    void onAction(event::Action &e) override;
     void step() override;
 };
 
 struct InterzoneWidget : ModuleWidget {
     InterzoneWidget(Interzone *module);
-    void appendContextMenu(Menu *menu) override;
-    void step() override;
+    // void appendContextMenu(Menu *menu) override;
+    // void step() override;
 
     float octaveMinAngle = -0.222222f * M_PI;
     float octaveMaxAngle = 0.222222f * M_PI;

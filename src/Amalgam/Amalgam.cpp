@@ -191,7 +191,7 @@ void Amalgam::dataFromJson(json_t *rootJ) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void AmalgamPanelStyleItem::onAction(const event::Action &e) {
+void AmalgamPanelStyleItem::onAction(event::Action &e) {
     module->panelStyle = panelStyle;
 }
 
@@ -204,14 +204,14 @@ void AmalgamPanelStyleItem::step() {
 
 AmalgamWidget::AmalgamWidget(Amalgam* module) {
     setModule(module);
-    setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/AmalgamPanelDark.svg")));
+    setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/AmalgamPanelLight.svg")));
 
-    if(module) {
-        lightPanel = new SvgPanel;
-        lightPanel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/AmalgamPanelLight.svg")));
-        lightPanel->visible = false;
-        addChild(lightPanel);
-    }
+    // if(module) {
+    //     lightPanel = new SvgPanel;
+    //     lightPanel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/AmalgamPanelLight.svg")));
+    //     lightPanel->visible = false;
+    //     addChild(lightPanel);
+    // }
 
     addChild(createWidget<ScrewBlack>(Vec(RACK_GRID_WIDTH, 0)));
     addChild(createWidget<ScrewBlack>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
@@ -427,41 +427,37 @@ AmalgamWidget::AmalgamWidget(Amalgam* module) {
 
 
     {
-        LightLEDButton* button = new LightLEDButton;
-        button->box.pos = DCCoupleLightPos;
-        if(module) {
-            button->paramQuantity = module->paramQuantities[Amalgam::DC_COUPLE_PARAM];
-        }
+        auto button = createParam<LightLEDButton>(DCCoupleLightPos, module, Amalgam::DC_COUPLE_PARAM);
         button->momentary = false;
         addParam(button);
     }
     addChild(createLight<MediumLight<RedLight>>(DCCoupleLightPos.plus(Vec(2.5f, 2.5f)), module, Amalgam::DC_COUPLE_LIGHT));
 }
 
-void AmalgamWidget::appendContextMenu(Menu *menu) {
-    Amalgam *module = dynamic_cast<Amalgam*>(this->module);
-    assert(module);
+// void AmalgamWidget::appendContextMenu(Menu *menu) {
+//     Amalgam *module = dynamic_cast<Amalgam*>(this->module);
+//     assert(module);
 
-    menu->addChild(construct<MenuLabel>());
-    menu->addChild(construct<MenuLabel>(&MenuLabel::text, "Panel style"));
-    menu->addChild(construct<AmalgamPanelStyleItem>(&MenuItem::text, "Dark", &AmalgamPanelStyleItem::module,
-                                                    module, &AmalgamPanelStyleItem::panelStyle, 0));
-    menu->addChild(construct<AmalgamPanelStyleItem>(&MenuItem::text, "Light", &AmalgamPanelStyleItem::module,
-                                                      module, &AmalgamPanelStyleItem::panelStyle, 1));
-}
+//     menu->addChild(construct<MenuLabel>());
+//     menu->addChild(construct<MenuLabel>(&MenuLabel::text, "Panel style"));
+//     menu->addChild(construct<AmalgamPanelStyleItem>(&MenuItem::text, "Dark", &AmalgamPanelStyleItem::module,
+//                                                     module, &AmalgamPanelStyleItem::panelStyle, 0));
+//     menu->addChild(construct<AmalgamPanelStyleItem>(&MenuItem::text, "Light", &AmalgamPanelStyleItem::module,
+//                                                       module, &AmalgamPanelStyleItem::panelStyle, 1));
+// }
 
-void AmalgamWidget::step() {
-    if(module) {
-        if(dynamic_cast<Amalgam*>(module)->panelStyle == 1) {
-            panel->visible = false;
-            lightPanel->visible = true;
-        }
-        else {
-            panel->visible = true;
-            lightPanel->visible = false;
-        }
-    }
-    Widget::step();
-}
+// void AmalgamWidget::step() {
+//     if(module) {
+//         if(dynamic_cast<Amalgam*>(module)->panelStyle == 1) {
+//             panel->visible = false;
+//             lightPanel->visible = true;
+//         }
+//         else {
+//             panel->visible = true;
+//             lightPanel->visible = false;
+//         }
+//     }
+//     Widget::step();
+// }
 
 Model *modelAmalgam = createModel<Amalgam, AmalgamWidget>("Amalgam");

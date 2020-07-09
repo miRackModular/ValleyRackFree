@@ -757,14 +757,14 @@ void Dexter::dataFromJson(json_t *rootJ) {
 
 DexterWidget::DexterWidget(Dexter *module) {
     setModule(module);
-    setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/DexterPanelDark.svg")));
+    setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/DexterPanelLight.svg")));
 
-    if(module) {
-        lightPanel = new SvgPanel;
-        lightPanel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/DexterPanelLight.svg")));
-        lightPanel->visible = false;
-        addChild(lightPanel);
-    }
+    // if(module) {
+    //     lightPanel = new SvgPanel;
+    //     lightPanel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/DexterPanelLight.svg")));
+    //     lightPanel->visible = false;
+    //     addChild(lightPanel);
+    // }
 
     addChild(createWidget<ScrewBlack>(Vec(RACK_GRID_WIDTH, 0)));
     addChild(createWidget<ScrewBlack>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
@@ -1091,7 +1091,7 @@ DexterWidget::DexterWidget(Dexter *module) {
 struct DexterPanelStyleItem : MenuItem {
     Dexter* module;
     int panelStyle;
-    void onAction(const event::Action &e) override {
+    void onAction(event::Action &e) override {
         module->panelStyle = panelStyle;
     }
     void step() override {
@@ -1103,7 +1103,7 @@ struct DexterPanelStyleItem : MenuItem {
 struct DexterOpSyncSourceItem : MenuItem {
     Dexter* module;
     FourVoiceOPCore::OpSyncSource opSyncSource = FourVoiceOPCore::PARENT_SYNC_SOURCE;
-    void onAction(const event::Action &e) override {
+    void onAction(event::Action &e) override {
         module->opSyncSource = opSyncSource;
     }
     void step() override {
@@ -1115,7 +1115,7 @@ struct DexterOpSyncSourceItem : MenuItem {
 struct DexterOpOuputSource : MenuItem {
     Dexter* module;
     unsigned long indivBOutputs = 0;
-    void onAction(const event::Action &e) override {
+    void onAction(event::Action &e) override {
         module->indivBOutputs = indivBOutputs;
     }
     void step() override {
@@ -1128,13 +1128,13 @@ void DexterWidget::appendContextMenu(Menu *menu) {
     Dexter *module = dynamic_cast<Dexter*>(this->module);
     assert(module);
 
-    // Panel style
-    menu->addChild(construct<MenuLabel>());
-    menu->addChild(construct<MenuLabel>(&MenuLabel::text, "Panel Style"));
-    menu->addChild(construct<DexterPanelStyleItem>(&MenuItem::text, "Dark", &DexterPanelStyleItem::module,
-                                                   module, &DexterPanelStyleItem::panelStyle, 0));
-    menu->addChild(construct<DexterPanelStyleItem>(&MenuItem::text, "Light", &DexterPanelStyleItem::module,
-                                                   module, &DexterPanelStyleItem::panelStyle, 1));
+    // // Panel style
+    // menu->addChild(construct<MenuLabel>());
+    // menu->addChild(construct<MenuLabel>(&MenuLabel::text, "Panel Style"));
+    // menu->addChild(construct<DexterPanelStyleItem>(&MenuItem::text, "Dark", &DexterPanelStyleItem::module,
+    //                                                module, &DexterPanelStyleItem::panelStyle, 0));
+    // menu->addChild(construct<DexterPanelStyleItem>(&MenuItem::text, "Light", &DexterPanelStyleItem::module,
+    //                                                module, &DexterPanelStyleItem::panelStyle, 1));
 
     // Operator Sync Source
     menu->addChild(construct<MenuLabel>());
@@ -1155,14 +1155,14 @@ void DexterWidget::appendContextMenu(Menu *menu) {
 
 void DexterWidget::step() {
     if(module) {
-        if(dynamic_cast<Dexter*>(module)->panelStyle == 1) {
-            panel->visible = false;
-            lightPanel->visible = true;
-        }
-        else {
-            panel->visible = true;
-            lightPanel->visible = false;
-        }
+        // if(dynamic_cast<Dexter*>(module)->panelStyle == 1) {
+        //     panel->visible = false;
+        //     lightPanel->visible = true;
+        // }
+        // else {
+        //     panel->visible = true;
+        //     lightPanel->visible = false;
+        // }
         algo->value = dynamic_cast<Dexter*>(module)->algo;
     }
     else {

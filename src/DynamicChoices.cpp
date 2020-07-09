@@ -5,7 +5,7 @@ DynamicItem::DynamicItem(unsigned long itemNumber) {
     _choice = nullptr;
 }
 
-void DynamicItem::onAction(const event::Action &e) {
+void DynamicItem::onAction(event::Action &e) {
     if(_choice != nullptr) {
         *_choice = _itemNumber;
     }
@@ -21,7 +21,7 @@ DynamicChoice::DynamicChoice() {
     _textSize = 14;
 }
 
-void DynamicChoice::onAction(const event::Action &e) {
+void DynamicChoice::onAction(event::Action &e) {
     Menu* menu = createMenu();
     menu->box.pos = getAbsoluteOffset(Vec(0, box.size.y)).round();
 	menu->box.size.x = box.size.x;
@@ -36,18 +36,13 @@ void DynamicChoice::onAction(const event::Action &e) {
 
 void DynamicChoice::step() {
     if(_visibility != nullptr) {
-        if(*_visibility) {
-            visible = true;
+        int v = *_visibility;
+        if(_viewMode == ACTIVE_LOW_VIEW)
+            v = !v;
+        if (v != _visible) {
+            visible = _visible = v;
+            parent->dirty = true;
         }
-        else {
-            visible = false;
-        }
-        if(_viewMode == ACTIVE_LOW_VIEW) {
-            visible = !visible;
-        }
-    }
-    else {
-        visible = true;
     }
     if(_choice != nullptr) {
         *_text = _items[*_choice];

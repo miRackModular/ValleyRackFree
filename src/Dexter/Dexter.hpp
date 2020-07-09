@@ -386,7 +386,7 @@ struct Dexter : Module {
     dsp::SchmittTrigger opMiscMenuBtnTrig[kNumOperators];
 
     float sampleRate = 44100.f;
-    int panelStyle = 0;
+    int panelStyle = 1;
 
     Dexter();
     ~Dexter();
@@ -410,7 +410,8 @@ struct AlgoGraphic : FramebufferWidget {
     int value;
     int* style;
     int styleOffset;
-
+    int _index = -1;
+    
     AlgoGraphic() {
         sw = new SvgWidget();
         addChild(sw);
@@ -418,16 +419,16 @@ struct AlgoGraphic : FramebufferWidget {
         style = nullptr;
         styleOffset = 0;
         std::string algoGraphicFile;
-        for(auto i = 0; i < 2; ++i) {
+        // for(auto i = 0; i < 2; ++i) {
             for(auto j = 0; j < kNumAlgorithms; ++j) {
                 algoGraphicFile = "res/algo" + std::to_string(j);
-                if(i) {
+                // if(i) {
                     algoGraphicFile += "Dark";
-                }
+                // }
                 algoGraphicFile += ".svg";
                 addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, algoGraphicFile)));
             }
-        }
+        // }
     }
 
     void addFrame(std::shared_ptr<Svg> svg) {
@@ -443,20 +444,23 @@ struct AlgoGraphic : FramebufferWidget {
         /*if (isNear(APP->window->pixelRatio,1.f)) {
             oversample = 2.f;
         }*/
-        if(style != nullptr) {
-            if(*style == 0) {
-                styleOffset = 0;
-            }
-            else {
-                styleOffset = kNumAlgorithms;
-            }
+        // if(style != nullptr) {
+        //     if(*style == 0) {
+        //         styleOffset = 0;
+        //     }
+        //     else {
+        //         styleOffset = kNumAlgorithms;
+        //     }
+        // }
+        // else {
+        //     styleOffset = 0;
+        // }
+        int index = clamp(value, 0, frames.size() - 1);
+        if (index != _index) {
+            _index = index;
+            sw->setSVG(frames[index]);
+            dirty = true;
         }
-        else {
-            styleOffset = 0;
-        }
-        int index = clamp(value + styleOffset, 0, frames.size() - 1);
-        sw->setSvg(frames[index]);
-        dirty = true;
         FramebufferWidget::step();
     }
 };

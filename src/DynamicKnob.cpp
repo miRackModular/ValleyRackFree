@@ -1,31 +1,31 @@
 #include "ValleyWidgets.hpp"
 
-DynamicKnob::DynamicKnob() {
-    fb = new widget::FramebufferWidget;
-	addChild(fb);
+// DynamicKnob::DynamicKnob() {
+// 	canCache = false;
+// 	canSquash = true;
 
-	shadow = new CircularShadow;
-	fb->addChild(shadow);
-	shadow->box.size = math::Vec();
+// 	shadow = new CircularShadow;
+// 	addChild(shadow);
+// 	shadow->box.size = math::Vec();
 
-	tw = new widget::TransformWidget;
-	fb->addChild(tw);
+// 	tw = new widget::TransformWidget;
+// 	addChild(tw);
 
-	sw = new widget::SvgWidget;
-	tw->addChild(sw);
+// 	sw = new widget::SvgWidget;
+// 	addChild(sw);
 
-    _visibility = nullptr;
-    _viewMode = ACTIVE_HIGH_VIEW;
-}
+//     _visibility = nullptr;
+//     _viewMode = ACTIVE_HIGH_VIEW;
+// }
 
-void DynamicKnob::setSvg(std::shared_ptr<Svg> svg) {
-	sw->svg = svg;
-	sw->wrap();
-	tw->box.size = sw->box.size;
-	box.size = sw->box.size;
-    shadow->box.size = sw->box.size;
-	shadow->box.pos = Vec(0, sw->box.size.y * 0.1);
-}
+// void DynamicKnob::setSvg(std::shared_ptr<Svg> svg) {
+// 	sw->svg = svg;
+// 	sw->wrap();
+// 	tw->box.size = sw->box.size;
+// 	box.size = sw->box.size;
+//     shadow->box.size = sw->box.size;
+// 	shadow->box.pos = Vec(0, sw->box.size.y * 0.1);
+// }
 
 /*void DynamicKnob::step() {
 	// Re-transform TransformWidget if dirty
@@ -76,28 +76,26 @@ DynamicSvgKnob::DynamicSvgKnob() {
 
 void DynamicSvgKnob::step() {
     if(_visibility != nullptr) {
-        if(*_visibility) {
-            visible = true;
-        }
-        else {
-            visible = false;
-        }
-        if(_viewMode == ACTIVE_LOW_VIEW) {
-            visible = !visible;
+        int v = *_visibility;
+        if(_viewMode == ACTIVE_LOW_VIEW)
+            v = !v;
+        if (v != _visible) {
+            visible = _visible = v;
+            parent->dirty = true;
         }
     }
-    else {
-        visible = true;
-    }
-    if (paramQuantity) {
-		float value = paramQuantity->getValue();
-		// Trigger change event when paramQuantity value changes
-		if (value != dirtyValue) {
-			dirtyValue = value;
-			event::Change eChange;
-			onChange(eChange);
-		}
-	}
+    // else {
+    //     visible = true;
+    // }
+ //    if (paramQuantity) {
+	// 	float value = paramQuantity->getValue();
+	// 	// Trigger change event when paramQuantity value changes
+	// 	if (value != dirtyValue) {
+	// 		dirtyValue = value;
+	// 		event::Change eChange;
+	// 		onChange(eChange);
+	// 	}
+	// }
 
-	Widget::step();
+	SvgKnob::step();
 }
